@@ -1,39 +1,36 @@
-import React, { Component, createContext } from 'react';
+import React, { Component, lazy, Suspense } from 'react';
 import './App.css';
 
-const BatteryContext = createContext(90); // 这里面传递的默认值就是consumer找不到对应的provider的时候用到的
+const About = lazy(() => import(/* webpackChunkName: "about" */'./About'));
 
-class Leaf extends Component {
-  static contextType = BatteryContext;
-
-  render() {
-    const battery = this.context;
-    return (
-      <h1>Battery: {battery}</h1>
-    )
-  }
-}
-class Middle extends Component {
-  render() {
-    return <Leaf />
-  }
-}
+// ErrorBoundary 捕获组件渲染错误的组件 componentDidCatch
 
 class App extends Component {
   state = {
-    online: false,
-    battery: 60
+    hasError: false
+  }
+  // componentDidCatch() {
+  //   this.setState({
+  //     hasError: true
+  //   })
+  // }
+  static getDerivedStateFromError() {
+    return {
+      hasError: true
+    }
   }
   render() {
-    const { battery, online } = this.state;
+    if (this.state.hasError) {
+      return <div>error!</div>
+    }
 
     return (
-      <BatteryContext.Provider value={battery}>
-          <button type="button" onClick={() => this.setState({battery: battery - 1})}>减一</button>
-          <button type="button" onClick={() => this.setState({online: !online})}>切换</button>
-          <Middle />
-      </BatteryContext.Provider>
-    );
+      <div>
+        <Suspense fallback={<div>Loading...</div>}>
+          <About />
+        </Suspense>
+      </div>
+    )
   }
 }
 
