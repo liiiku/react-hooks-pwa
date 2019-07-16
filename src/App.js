@@ -1,42 +1,38 @@
-import React, { Component, PureComponent, memo } from 'react';
+import React, { Component, useState } from 'react';
 import './App.css';
 
-// class Foo extends PureComponent {
-//   // 如果上面没有用pureComponent 的话， pureComponet 只有传入属性本身的对比，如果属性的内部发生了变化，就没有办法了
-//   // shouldComponentUpdate(nextProps, nextState) {
-//   //   console.log('nextProps', nextProps)
-//   //   if (nextProps.name === this.props.name) {
-//   //     return false;
-//   //   }
-
-//   //   return true;
-//   // }
-//   render() {
-//     console.log('hello foo!')
-//     return null;
-//   }
-// }
-const Foo = memo(function Foo () {
-  console.log('foo render');
-  return (
-    <div>Foo 组件</div>
-  )
-})
-
-class App extends Component {
+class App2 extends Component {
   state = {
     count: 0
   }
-  render () {
+  render() {
+    const { count } = this.state;
     return (
-      <div>
-        <button 
-          onClick={() => this.setState({count: this.state.count + 1})}
-        >加一</button>
-        <Foo name="App" />
-      </div>
+      <button
+        type="button"
+        onClick={() => this.setState({count: count + 1})}
+      >Click ({count})</button>
     )
   }
+}
+
+function App (props) {
+  // 如果点击按钮的时候，setCount传入0，传入的的count的值没有变化，组件是不会重新渲染的
+  const [count, setCount] = useState(0);
+  console.log('app render')
+
+  // 传入函数可以延迟初始化，也就是只调用一次
+  // const [count, setCount] = useState(() => {
+  //   console.log('initial count')
+  //   return props.defaultCount || 0;
+  // })
+
+  return (
+    <button
+      type="button"
+      onClick={() => setCount(count + 1)}
+    >Click ({count})</button>
+  ) 
 }
 
 export default App;
